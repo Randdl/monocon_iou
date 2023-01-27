@@ -252,18 +252,15 @@ class MonoConDenseHeads(nn.Module):
         center2kpt_offset_loss = self.crit_center2kpt_offset(center2kpt_offset_pred,
                                                              center2kpt_offset_target,
                                                              avg_factor=(mask_center2kpt_offset.sum() + EPS))
-        print(center2kpt_offset_pred)
-        print(center2kpt_offset_target)
         # print(center2kpt_offset_pred)
+        # print(center2kpt_offset_target)
         center2kpt_offset_iou_loss = self.kpt_iou(center2kpt_offset_pred[:, 0:8],
                                                   center2kpt_offset_target[:, 0:8]) + \
                                      self.kpt_iou(center2kpt_offset_pred[:, 8:16],
                                                   center2kpt_offset_target[:, 8:16])
         center2kpt_offset_iou_loss = center2kpt_offset_iou_loss / 2
-        print(center2kpt_offset_iou_loss)
-
-        # print(center2kpt_offset_loss)
         # print(center2kpt_offset_iou_loss)
+        # print(center2kpt_offset_loss)
 
         kpt_heatmap_offset_pred = transpose_and_gather_feat(pred_dict['kpt_heatmap_offset_pred'], indices_kpt)
         kpt_heatmap_offset_pred = kpt_heatmap_offset_pred.reshape(batch_size, self.max_objs, (self.num_kpts * 2))
