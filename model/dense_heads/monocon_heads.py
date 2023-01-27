@@ -166,6 +166,12 @@ class MonoConDenseHeads(nn.Module):
         kpt_heatmap_offset_pred = self.kpt_heatmap_offset_head(feat)
         center2kpt_offset_pred = self.center2kpt_offset_head(feat)
 
+        # changed
+        device = center2kpt_offset_pred.device
+        displacement = torch.tensor([2, -2, -2, -2, -2, 2, 2, 2, 2, -2, -2, -2, -2, 2, 2, 2], device=device)
+        displacement = displacement.view(1, -1, 1, 1)
+        center2kpt_offset_pred[:, 0:16, :, :] += displacement
+
         # (3) Dimension
         dim_pred = self.dim_head(feat)
 
@@ -246,12 +252,15 @@ class MonoConDenseHeads(nn.Module):
         center2kpt_offset_loss = self.crit_center2kpt_offset(center2kpt_offset_pred,
                                                              center2kpt_offset_target,
                                                              avg_factor=(mask_center2kpt_offset.sum() + EPS))
-        # print(center2kpt_offset_target)
+        print(center2kpt_offset_pred)
+        print(center2kpt_offset_target)
+        # print(center2kpt_offset_pred)
         center2kpt_offset_iou_loss = self.kpt_iou(center2kpt_offset_pred[:, 0:8],
                                                   center2kpt_offset_target[:, 0:8]) + \
                                      self.kpt_iou(center2kpt_offset_pred[:, 8:16],
                                                   center2kpt_offset_target[:, 8:16])
         center2kpt_offset_iou_loss = center2kpt_offset_iou_loss / 2
+        print(center2kpt_offset_iou_loss)
 
         # print(center2kpt_offset_loss)
         # print(center2kpt_offset_iou_loss)
