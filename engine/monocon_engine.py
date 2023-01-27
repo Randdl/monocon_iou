@@ -106,7 +106,7 @@ class MonoconEngine(BaseEngine):
                 one_epoch_steps = len(self.train_loader)
                 prog_bar = progress_to_string_bar((batch_idx + 1), one_epoch_steps, bins=20)
                 recent_loss = sum(self.entire_losses[-100:]) / len(self.entire_losses[-100:])
-                print(f"| Progress {prog_bar} | LR {self.current_lr:.6f} | Loss {total_loss.item():8.4f} ({recent_loss:8.4f}) | {loss_dict['loss_iou'].item():8.4f}")
+                print(f"| Progress {prog_bar} | LR {self.current_lr:.6f} | Loss {total_loss.item():8.4f} ({recent_loss:8.4f}) | {loss_dict['loss_center2kpt_offset'].item():8.4f} | {loss_dict['loss_iou'].item():8.4f}")
                 
                 self._update_dict_to_writer(loss_dict, tag='loss')
                 
