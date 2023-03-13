@@ -353,6 +353,7 @@ class MonoConDenseHeads(nn.Module):
         for result_dict, pred_2d, pred_3d in zip(result_list, results_2d, results_3d):
             result_dict['img_bbox'] = pred_3d
             result_dict['img_bbox2d'] = pred_2d
+            # print(pred_2d)
 
         if get_vis_format:
             return result_list
