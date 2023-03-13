@@ -6,7 +6,7 @@ _C = CN()
 _C.VERSION = 'v1.0.3'
 _C.DESCRIPTION = "MonoCon Default Configuration"
 
-_C.OUTPUT_DIR = ""                               # Output Directory
+_C.OUTPUT_DIR = "notimportant"                               # Output Directory
 _C.SEED = -1                                     # -1: Random Seed Selection
 _C.GPU_ID = 0                                    # Index of GPU to use
 
@@ -15,9 +15,9 @@ _C.USE_BENCHMARK = True                          # Value of 'torch.backends.cudn
 
 # Data
 _C.DATA = CN()
-_C.DATA.ROOT = r'/home/user/SSD/KITTI'                  # KITTI Root
-_C.DATA.BATCH_SIZE = 8
-_C.DATA.NUM_WORKERS = 4
+_C.DATA.ROOT = r'../Kitti/raw'                  # KITTI Root
+_C.DATA.BATCH_SIZE = 2
+_C.DATA.NUM_WORKERS = 0
 _C.DATA.TRAIN_SPLIT = 'train'
 _C.DATA.TEST_SPLIT = 'val'
 
