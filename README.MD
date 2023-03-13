@@ -1,3 +1,13 @@
+# Changes
+We incorporate PIoU loss into losses.poly_iou_loss.py and model.dense_heads.monocon_heads.py.
+
+If using only L1 loss, delete lines 257-261 and 305 in model.dense_heads.monocon_heads.py.
+
+We add --submit setting in test.py to generate submission format of results
+
+The configs for L1 and L1+PIoU loss are in config/.
+
+
 # MonoCon (AAAI, 2022)
 This repository contains unofficial pytorch implementation for **[MonoCon: Learning Auxiliary Monocular Contexts Helps Monocular 3D Object Detection (AAAI, 2022)](https://arxiv.org/abs/2112.04628)**.   
 We have removed the dependency on [mmdetection3d](https://github.com/open-mmlab/mmdetection3d) from the original author's [code](https://github.com/Xianpeng919/MonoCon).
