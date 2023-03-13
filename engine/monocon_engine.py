@@ -137,6 +137,7 @@ class MonoconEngine(BaseEngine):
             
             for field in ['img_bbox', 'img_bbox2d']:
                 eval_container[field].extend(eval_results[field])
+            # print(eval_results['img_bbox'][0])
         
         eval_dict = self.test_dataset.evaluate(eval_container,
                                                eval_classes=['Pedestrian', 'Cyclist', 'Car'],
@@ -166,7 +167,7 @@ class MonoconEngine(BaseEngine):
             test_data = move_data_device(test_data, self.current_device)
             
             if (scale_hw is None) and test_data['img_metas'].get('scale_hw', False):
-                scale_hw = test_data['img_metas']['scale_hw'][0]    
+                scale_hw = test_data['img_metas']['scale_hw'][0]
             
             vis_results = self.model.batch_eval(test_data, get_vis_format=True)
             vis_container.extend(vis_results)
@@ -178,7 +179,7 @@ class MonoconEngine(BaseEngine):
             '2d': 'plot_bboxes_2d',
             '3d': 'plot_bboxes_3d',
             'bev': 'plot_bev'}
-        
+
         for draw_item in draw_items:
             save_dir = os.path.join(output_dir, draw_item)
             os.makedirs(save_dir, exist_ok=True)
@@ -189,6 +190,66 @@ class MonoconEngine(BaseEngine):
                 ori_filename = os.path.basename(self.test_dataset[idx]['img_metas']['image_path'])
                 draw_func(idx, save_path=os.path.join(save_dir, ori_filename))
                 
+        if cvt_flag:
+            self.model.train()
+            tprint("Model is converted to train mode.")
+
+    @torch.no_grad()
+    def submit_format(self,
+                  output_dir: str):
+        cvt_flag = False
+        if self.model.training:
+            self.model.eval()
+            cvt_flag = True
+            tprint("Model is converted to eval mode.")
+
+        eval_container = {
+            'img_bbox': [],
+            'img_bbox2d': []}
+
+        for test_data in tqdm(self.test_loader, desc="Collecting Results..."):
+            test_data = move_data_device(test_data, self.current_device)
+            eval_results = self.model.batch_eval(test_data)
+
+            for field in ['img_bbox', 'img_bbox2d']:
+                eval_container[field].extend(eval_results[field])
+            # print(eval_results['img_bbox'][0])
+
+        save_dir = os.path.join(output_dir, 'predictions')
+        os.makedirs(save_dir, exist_ok=True)
+
+        classes_dic = ['Car', 'Pedestrian', 'Cyclist']
+
+        for idx in tqdm(range(len(self.test_dataset)), desc="Generating Submission Format Results..."):
+            output = []
+            bbox_3d = eval_container['img_bbox'][idx]
+            for i in range(bbox_3d['name'].shape[0]):
+                name = bbox_3d['name'][i]
+                bbox = bbox_3d['bbox'][i]
+                dimensions = bbox_3d['dimensions'][i]
+                location = bbox_3d['location'][i]
+                rotation_y = bbox_3d['rotation_y'][i]
+                score = bbox_3d['score'][i]
+
+                output_list = [name, 0.00, 0, 0.00]
+                output_list += bbox.tolist()
+                output_list += dimensions.tolist()[1:]
+                output_list.append(dimensions.tolist()[0])
+                output_list += location.tolist()
+                output_list.append(rotation_y.item())
+                output_list.append(score.item())
+                print(output_list)
+                output_list = ' '.join([str(x) for x in output_list])
+                output_list += '\n'
+                output.append(output_list)
+            ori_filename = os.path.basename(self.test_dataset[idx]['img_metas']['image_path'])
+            # print(ori_filename)
+            ori_filename = ori_filename.replace('png', 'txt')
+
+            save_path = os.path.join(save_dir, ori_filename)
+            with open(save_path, 'w') as fp:
+                fp.writelines(output)
+
         if cvt_flag:
             self.model.train()
             tprint("Model is converted to train mode.")

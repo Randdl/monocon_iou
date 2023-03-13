@@ -66,6 +66,7 @@ class BaseKITTIMono3DDataset(Dataset):
     
     def load_image(self, idx: int) -> Tuple[np.ndarray, Dict[str, Any]]:
         image_arr = cv2.imread(self.image_files[idx])
+        # print(self.image_files[idx])
         image_data = cv2.cvtColor(image_arr, code=cv2.COLOR_BGR2RGB)
         
         img_metas = {
@@ -134,6 +135,8 @@ class BaseKITTIMono3DDataset(Dataset):
         for name, result in kitti_format_results.items():
             if '2d' in name:
                 eval_types=['bbox']
+            # print(self.gt_annos)
+            # print(result)
             result_string, result_dict = kitti_eval(
                 gt_annos=self.gt_annos,
                 dt_annos=result,

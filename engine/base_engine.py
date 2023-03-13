@@ -168,7 +168,7 @@ class BaseEngine:
         file_path = os.path.join(self.weight_dir, file_name)
         
         # Hard-coded
-        attr_except = ['cfg', 'writer', 'train_loader', 'test_loader', 'train_dataset', 'test_dataset'
+        attr_except = ['cfg', 'writer', 'train_loader', 'test_loader', 'train_dataset', 'test_dataset',
                        'model', 'optimizer', 'scheduler',]
         attrs = {k: v for k, v in self.__dict__.items() \
             if not callable(getattr(self, k)) and (k not in attr_except)}
@@ -198,8 +198,9 @@ class BaseEngine:
         # Load Engine Attributes
         attrs = engine_dict['engine_attrs']
         for attr_k, attr_v in attrs.items():
+            if attr_k == 'test_dataset':
+                continue
             setattr(self, attr_k, attr_v)
-        
             
         state_dict = engine_dict['state_dict']
         

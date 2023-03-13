@@ -158,6 +158,7 @@ def d3_box_overlap_kernel(boxes, qboxes, rinc, criterion=-1):
 
 
 def d3_box_overlap(boxes, qboxes, criterion=-1):
+    # print(boxes[:, [0, 2, 3, 5, 6]])
     rinc = rotate_iou_gpu_eval(boxes[:, [0, 2, 3, 5, 6]],
                                qboxes[:, [0, 2, 3, 5, 6]], 2)
     d3_box_overlap_kernel(boxes, qboxes, rinc, criterion)
@@ -685,13 +686,16 @@ def kitti_eval(gt_annos,
     assert len(eval_types) > 0, 'must contain at least one evaluation type'
     if 'aos' in eval_types:
         assert 'bbox' in eval_types, 'must evaluate bbox when evaluating aos'
-    overlap_0_7 = np.array([[0.7, 0.5, 0.5, 0.7,
-                             0.5], [0.7, 0.5, 0.5, 0.7, 0.5],
+    overlap_0_7 = np.array([[0.7, 0.5, 0.5, 0.7, 0.5],
+                            [0.7, 0.5, 0.5, 0.7, 0.5],
                             [0.7, 0.5, 0.5, 0.7, 0.5]])
     overlap_0_5 = np.array([[0.7, 0.5, 0.5, 0.7, 0.5],
-                            [0.5, 0.25, 0.25, 0.5, 0.25],
-                            [0.5, 0.25, 0.25, 0.5, 0.25]])
-    min_overlaps = np.stack([overlap_0_7, overlap_0_5], axis=0)  # [2, 3, 5]
+                            [0.5, 0.4, 0.4, 0.5, 0.4],
+                            [0.5, 0.4, 0.4, 0.5, 0.4]])
+    overlap_0_3 = np.array([[0.7, 0.5, 0.5, 0.7, 0.5],
+                            [0.3, 0.25, 0.25, 0.3, 0.25],
+                            [0.3, 0.25, 0.25, 0.3, 0.25]])
+    min_overlaps = np.stack([overlap_0_7, overlap_0_5, overlap_0_3], axis=0)  # [2, 3, 5]
     class_to_name = {
         0: 'Car',
         1: 'Pedestrian',

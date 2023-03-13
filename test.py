@@ -19,6 +19,7 @@ parser.add_argument('--checkpoint_file',
 parser.add_argument('--gpu_id', type=int, default=0, help="Index of GPU to use for testing")
 parser.add_argument('--evaluate', action='store_true')
 parser.add_argument('--visualize', action='store_true')
+parser.add_argument('--submit', action='store_true')
 parser.add_argument('--save_dir', 
                     type=str,
                     help="Path of the directory to save the visualized results")
@@ -64,6 +65,10 @@ if args.evaluate:
     tprint("Mode: Evaluation")
     engine.evaluate()
 
+# Generate Submission Format Files
+if args.submit:
+    tprint("Mode: Submission")
+    engine.submit_format(args.save_dir)
 
 # Visualize
 if args.visualize:

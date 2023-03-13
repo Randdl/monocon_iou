@@ -77,7 +77,17 @@ class MonoConDataset(BaseKITTIMono3DDataset):
         
         image, img_metas = self.load_image(idx)
         calib = self.load_calib(idx)
-        
+
+        if self.split == 'test':
+            new_labels = self._create_empty_labels()
+            result_dict = {
+                'img': image,
+                'img_metas': img_metas,
+                'calib': calib,
+                'label': new_labels}
+            result_dict = self.transforms(result_dict)
+            return result_dict
+
         # Raw State: Cam0 + Bottom-Center + Global Yaw
         # Converted to Cam2 + Local Yaw
         raw_labels = self.load_label(idx)
